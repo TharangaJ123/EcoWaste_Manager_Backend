@@ -22,12 +22,20 @@ export const createRequest = async (req, res) => {
     const resident = await Resident.findById(residentId);
     if (!resident) return res.status(404).json({ message: "Resident not found" });
 
+    const address = {
+      streetAddress: resident.streetAddress,
+      city: resident.city,
+      postalCode: resident.postalCode,
+      formatted: [resident.streetAddress, resident.city, resident.postalCode].filter(Boolean).join(', '),
+    };
+
     const request = await SpecialPickupRequest.create({
       resident: residentId,
       wasteType,
       estimatedWeight,
       description,
       preferredDate: new Date(preferredDate),
+      address,
     });
 
     try {
@@ -96,7 +104,7 @@ export const getRequest = async (req, res) => {
 export const approveRequest = async (req, res) => {
   try {
     const { id } = req.params;
-    const { action } = req.body; // 'approve' | 'reject'
+    const { action } = req.body;
     const adminId = req.user.id;
     const admin = await Admin.findById(adminId);
     if (!admin) return res.status(403).json({ message: "Forbidden" });
@@ -182,14 +190,13 @@ export const assignStaff = async (req, res) => {
 export const updateStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body; // e.g., completed
+    const { status } = req.body;
     const allowed = ["pending", "approved", "assigned", "rejected", "completed"];
     if (!allowed.includes(status)) return res.status(400).json({ message: "Invalid status" });
 
     const r = await SpecialPickupRequest.findById(id).populate("resident", "email");
     if (!r) return res.status(404).json({ message: "Not found" });
 
-    // Staff can set completed, admin can set any
     if (req.user.role === "staff") {
       if (status !== "completed") return res.status(403).json({ message: "Forbidden" });
       if (r.assignedStaff?.toString() !== req.user.id) return res.status(403).json({ message: "Forbidden" });
