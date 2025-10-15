@@ -8,6 +8,7 @@ import specialPickupRoutes from "./routes/specialPickupRoutes.js";
 import collectionRoutes from "./routes/collectionRoutes.js";
 import binsRoutes from "./routes/binsRoutes.js";
 import routeAssignmentRoutes from "./routes/routeAssignmentRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -26,6 +27,7 @@ app.use("/api/special-pickups", specialPickupRoutes);
 app.use("/api/collections", collectionRoutes);
 app.use("/api/bins", binsRoutes);
 app.use("/api/route-assignments", routeAssignmentRoutes);
+app.use("/api/payments", paymentRoutes);
 
 app.listen(process.env.PORT || 5000, () => {
   console.log(`🚀 Server running on port ${process.env.PORT}`);

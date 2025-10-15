@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const specialPickupRequestSchema = new mongoose.Schema(
   {
     resident: { type: mongoose.Schema.Types.ObjectId, ref: "Resident", required: true },
-    wasteType: { type: String, enum: ["hazardous", "ewaste", "plastic", "glass"], required: true },
+    wasteType: { type: String, enum: ["bulky", "hazardous", "ewaste"], required: true },
     estimatedWeight: { type: Number, min: 0, required: true },
     description: { type: String, required: true },
     preferredDate: { type: Date, required: true },

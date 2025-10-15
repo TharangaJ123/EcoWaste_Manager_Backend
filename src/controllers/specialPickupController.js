@@ -3,6 +3,7 @@ import Resident from "../models/Resident.js";
 import Staff from "../models/Staff.js";
 import Admin from "../models/Admin.js";
 import { sendEmail } from "../utils/sendEmail.js";
+import PaymentDetail from "../models/PaymentDetail.js";
 
 export const createRequest = async (req, res) => {
   try {
@@ -37,6 +38,31 @@ export const createRequest = async (req, res) => {
       preferredDate: new Date(preferredDate),
       address,
     });
+
+    // Create Payment Details entry for this special pickup
+    try {
+      const weight = Number(estimatedWeight || 0);
+      const generalCharge = Math.max(0, weight - 3) * 20; // Rs.20 per kg over 3kg
+      const specialCharge = 25; // flat Rs.25 for special pickup
+      const recycleCredit = -(generalCharge * 0.25); // 25% credit
+      const totalAmount = generalCharge + specialCharge + recycleCredit;
+
+      const issueDate = new Date();
+      const dueDate = new Date(issueDate);
+      dueDate.setDate(dueDate.getDate() + 30);
+
+      await PaymentDetail.create({
+        resident: residentId,
+        specialPickupRequest: request._id,
+        generalCharge,
+        specialCharge,
+        recycleCredit,
+        totalAmount,
+        status: "Pending",
+        issueDate,
+        dueDate,
+      });
+    } catch (_) {}
 
     try {
       if (resident.email) {
