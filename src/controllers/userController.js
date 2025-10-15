@@ -69,7 +69,7 @@ export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
     const update = { ...req.body };
-    delete update.password; // prevent password changes here
+    delete update.password;
 
     const options = { new: true, runValidators: true, select: "-password -__v" };
     const models = [Admin, Staff, Resident];

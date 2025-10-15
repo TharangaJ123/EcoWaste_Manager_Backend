@@ -6,10 +6,8 @@ const router = express.Router();
 
 router.use(protect);
 
-// Staff records a collection by binId
 router.post("/record", authorize("staff"), recordCollection);
 
-// List collections by role scope
 router.get("/", authorize("admin", "staff", "resident"), listCollections);
 
 export default router;

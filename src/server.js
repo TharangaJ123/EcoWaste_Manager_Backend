@@ -6,6 +6,8 @@ import cors from 'cors';
 import userRoutes from "./routes/userRoutes.js";
 import specialPickupRoutes from "./routes/specialPickupRoutes.js";
 import collectionRoutes from "./routes/collectionRoutes.js";
+import binsRoutes from "./routes/binsRoutes.js";
+import routeAssignmentRoutes from "./routes/routeAssignmentRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -16,13 +18,14 @@ app.use(cors({
   credentials: true,
 }));
 
-// Connect to MongoDB
 connectDB();
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/special-pickups", specialPickupRoutes);
 app.use("/api/collections", collectionRoutes);
+app.use("/api/bins", binsRoutes);
+app.use("/api/route-assignments", routeAssignmentRoutes);
 
 app.listen(process.env.PORT || 5000, () => {
   console.log(`🚀 Server running on port ${process.env.PORT}`);

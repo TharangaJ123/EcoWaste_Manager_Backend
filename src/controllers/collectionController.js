@@ -4,7 +4,6 @@ import Staff from "../models/Staff.js";
 import CollectionRecord from "../models/CollectionRecord.js";
 import { sendEmail } from "../utils/sendEmail.js";
 
-// POST /api/collections/record
 export const recordCollection = async (req, res) => {
   try {
     const { binId, weightKg, notes } = req.body;
@@ -12,18 +11,15 @@ export const recordCollection = async (req, res) => {
     const weight = Number(weightKg);
     if (!(weight > 0)) return res.status(400).json({ message: "weightKg must be > 0" });
 
-    // Staff only
     if (req.user?.role !== "staff") return res.status(403).json({ message: "Forbidden" });
 
     const bin = await Bin.findOne({ binId }).populate("resident", "email name");
     if (!bin) return res.status(404).json({ message: "Bin not found" });
     if (!bin.resident) return res.status(400).json({ message: "Bin is not linked to a resident" });
 
-    // Ensure staff exists
     const staff = await Staff.findById(req.user.id);
     if (!staff) return res.status(403).json({ message: "Forbidden" });
 
-    // Create record
     const record = await CollectionRecord.create({
       bin: bin._id,
       resident: bin.resident._id || bin.resident,
@@ -32,12 +28,11 @@ export const recordCollection = async (req, res) => {
       notes: notes || undefined,
     });
 
-    // Update bin metadata
     bin.lastCollectedAt = new Date();
     bin.lastCollectedWeightKg = weight;
+    bin.currentWeightKg = 0;
     await bin.save();
 
-    // Notify resident (best-effort)
     try {
       if (bin.resident?.email) {
         await sendEmail(
@@ -48,7 +43,6 @@ export const recordCollection = async (req, res) => {
       }
     } catch (_) {}
 
-    // Return populated record
     const populated = await CollectionRecord.findById(record._id)
       .populate("bin", "binId")
       .populate("resident", "name email")
@@ -61,8 +55,6 @@ export const recordCollection = async (req, res) => {
   }
 };
 
-// GET /api/collections
-// Admin: all, Staff: own, Resident: own
 export const listCollections = async (req, res) => {
   try {
     const { role, id } = req.user || {};
