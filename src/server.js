@@ -9,6 +9,7 @@ import collectionRoutes from "./routes/collectionRoutes.js";
 import binsRoutes from "./routes/binsRoutes.js";
 import routeAssignmentRoutes from "./routes/routeAssignmentRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import truckRoutes from "./routes/truckRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -28,6 +29,7 @@ app.use("/api/collections", collectionRoutes);
 app.use("/api/bins", binsRoutes);
 app.use("/api/route-assignments", routeAssignmentRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/trucks", truckRoutes);
 
 app.listen(process.env.PORT || 5000, () => {
   console.log(`🚀 Server running on port ${process.env.PORT}`);
