@@ -20,6 +20,7 @@ const specialPickupRequestSchema = new mongoose.Schema(
     },
     assignedStaff: { type: mongoose.Schema.Types.ObjectId, ref: "Staff", default: null },
     approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Admin", default: null },
+    routeAssignment: { type: mongoose.Schema.Types.ObjectId, ref: "RouteAssignment", default: null },
   },
   { timestamps: true }
 );
